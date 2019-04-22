@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.0/paper-core.js"></script>
+<script src="svg.js"></script>
+<script src="app.js"></script>
+
+<!-- A ridiculous handlebars template for the settings dialog -->
+<script id="settings-dialog" type="text/x-handlebars-template">
+<div title="Settings">
+  <div id="settings-main-page">
+    <fieldset>
+      <legend>Page options</legend>
+      <label for="settings-pageWidth">Width:</label>
+      <input id="settings-pageWidth" value="{{pageWidth}}"></input>
+      <label for="settings-pageHeight">Height:</label>
+      <input id="settings-pageHeight" value="{{pageHeight}}"></input>
+      <label for="settings-pageMargin">Margin:</label>
+      <input id="settings-pageMargin" value="{{pageMargin}}"></input>
+      <label for="settings-backgroundColor">Background color:</label>
+      <input id="settings-backgroundColor" type="color" value="{{backgroundColor}}"></input>
+    </fieldset>
+    <fieldset>
+      <legend>Style options</legend>
+      <div class="check-field">
+        <input id="settings-showPlaceLabels" type="checkbox" {{#if showPlaceLabels}}checked="checked"{{/if}}></input>
+        <label for="settings-showPlaceLabels">Show place labels</label>
+      </div>
+      <div class="check-field">
+        <input id="settings-showEdgeMeasurements" type="checkbox" {{#if showEdgeMeasurements}}checked="checked"{{/if}}></input>
+        <label for="settings-showEdgeMeasurements">Show edge measurements</label>
+      </div>
+      <div class="check-field">
+        <input id="settings-blackAndWhite" type="checkbox" {{#if blackAndWhite}}checked="checked"{{/if}}></input>
+        <label for="settings-blackAndWhite">Black and white</label>
+      </div>
+      <div class="check-field">
+        <input id="settings-outlineOnly" type="checkbox" {{#if outlineOnly}}checked="checked"{{/if}}></input>
+        <label for="settings-outlineOnly">Onlines only</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Label options</legend>
+      <label for="settings-labelFont">Font:</label>
+      <input id="settings-labelFont" value="{{labelFont}}"></input>
+      <label for="settings-labelFont">Anchor length:</label>
+      <input id="settings-anchorLength" value="{{anchorLength}}"></input>
+      <label for="settings-labelLineColor">Anchor line color:</label>
+      <input id="settings-labelLineColor" type="color" value="{{labelLineColor}}"></input>
+      <label for="settings-labelDotFillColor">Dot fill color:</label>
+      <input id="settings-labelDotFillColor" type="color" value="{{labelDotFillColor}}"></input>
+      <label for="settings-labelDotRadius">Dot radius:</label>
+      <input id="settings-labelDotRadius" value="{{labelDotRadius}}"></input>
+    </fieldset>
+    {{#each folders}}
+      <fieldset class="folder" data-index="{{@index}}">
+        <legend>{{name}}</legend>
+        <div class="check-field folder-show">
+          <input id="settings-folder-{{@index}}-show" type="checkbox" {{#unless hide}}checked="checked"{{/unless}}></input>
+          <label for="settings-folder-{{@index}}-show">Show <strong>{{placeCount}} places</strong></label>
+          <button class="settings" {{#if hide}}style="display:none"{{/if}}>Settings</button>
+        </div>
+      </fieldset>
+    {{/each}}
+  </div>
+  {{#each folders}}
+    <div class="folder-settings-page folder-{{@index}}" data-index="{{@index}}" style="display:none">
+      <button class="back"><span class="chevron left"></span></button>
+      <h2 class="folder-title">{{name}}</h3>
+      {{#each placemarks}}
+      <fieldset class="placemark placemark-{{@index}}" data-index="{{@index}}">
+        <legend>{{name}}</legend>
+        <label>Label:</label>
+        <select class="labelStyle">
+          <option value="none">None</option>
+          <option value="topleft">Top-Left</option>
+          <option value="topright">Top-Right</option>
+          <option value="bottomright">Bottom-Right</option>
+          <option value="bottomleft">Bottom-Left</option>
+          <option value="center">Center</option>
+        </select>
+      </fieldset>
+      {{/each}}
+    </div>
+  {{/each}}
+</div>
+</script>
+</head>
+
+<body>
+  <h1>Gmap 2 Svg</h1>
+  <fieldset>
+    <label for="gmap_url">GMap URL:</label>
+    <input id="gmap_url" value="https://www.google.com/maps/d/edit?mid=1jV4MnNzpoJIj8DELMU472YSc-V9obbqB&ll=36.62536279109554%2C-80.3330103932849&z=18"></input>
+  </fieldset>
+  <fieldset>
+    <button id='generate-button'>Generate</button>
+    <button id='settings-button' style="display:none">Settings</button>
+    <button id='export-button' style="display:none">Export</button>
+  </fieldset>
+  <h3 class="svg-doc-name"></h3>
+  <div class="svg-doc"></div>
+</body>
+
+</html>
