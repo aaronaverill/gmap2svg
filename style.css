@@ -43,7 +43,16 @@ span.field-description {
   width: 100%;
 }
 .svg-wrapper .loading-spinner > div {
-  margin-top: 50%;
+  margin-top: 10%;
+}
+.svg-wrapper canvas.loaded {
+  background-color: #FFF;
+  box-shadow: 0 0 10px 0px rgba(0,0,0,.1);
+  left: 50%;
+  margin-right: -50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .sidebar .top-buttons {
@@ -53,6 +62,18 @@ span.field-description {
 }
 .sidebar .field-section {
   overflow: hidden;
+}
+.sidebar .display-options {
+  bottom: 15px;
+  left: 15px;
+  overflow-y: auto;
+  padding-right: 15px;
+  position: absolute;
+  right: 0;
+  top: 58px;
+}
+.sidebar .display-options .col {
+  padding: 0;
 }
 .sidebar .field-section.with-checkbox h4,
 .sidebar .field-section.with-checkbox h5,
@@ -74,18 +95,6 @@ span.field-description {
 .sidebar .field-section.with-checkbox.small-title .custom-checkbox {
   padding: 0;
 }
-.sidebar .display-options {
-  bottom: 15px;
-  left: 15px;
-  overflow-y: auto;
-  padding-right: 15px;
-  position: absolute;
-  right: 0;
-  top: 58px;
-}
-.sidebar .display-options .col {
-  padding: 0;
-}
 .sidebar .display-options label,
 .sidebar .display-options input,
 .sidebar .display-options select {
@@ -99,6 +108,21 @@ span.field-description {
   text-align: end;
 }
 .sidebar .display-options select {
+  width: 100%;
+}
+.sidebar .display-options .color-button {
+  border: 1px solid #A9A9A9;
+  border-radius: 2px;
+  cursor: pointer;
+  height: 21px;
+  margin: 2px;
+  padding: 2px;
+}
+.sidebar .display-options .color-button:hover {
+  border-color: #666;
+}
+.sidebar .display-options .color-button .color-block {
+  height: 100%;
   width: 100%;
 }
 .sidebar .map-settings fieldset {

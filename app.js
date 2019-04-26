@@ -308,7 +308,7 @@ var defaultDisplayOptions = {
     fillColor: '#000000',
   },
   placeLabels: {
-    hide: false,
+    show: true,
     style: 'flag',
     color: '#000000',
     fontSize: 7,
@@ -345,6 +345,11 @@ App = class {
     $('.display-options').on('change', 'select[data-property="page.orientation"]', function(event) {
       $('.row.page-orientation-custom-fields').toggle($(this).val() == 'custom');
     });
+    $('.display-options').on('click', '.color-button', function(event) {
+      me.handleColorButtonClick(event);
+    });
+    
+    // Page section
     
     // Shapes section
     $('.display-options').on('change', 'select[data-property="shapes.lineStyle"]', function(event) {
@@ -359,7 +364,7 @@ App = class {
     // Place labels section
     $('.display-options').on('change', '#placeLabels-show', function(event) {
       var show = $(this).is(':checked');
-      me.displayOptions.placeLabels.hide = !show
+      me.displayOptions.placeLabels.show = show
       $('fieldset.placeLabels .container.fields').toggle(show);
       me.updateCanvas();
       me.saveDisplayOptions();
@@ -403,6 +408,22 @@ App = class {
         value = parseFloat(value);
         break;
     }
+    this.setDisplayOption(propertyPath, property, value);
+  }
+  
+  handleColorButtonClick(event) {
+    var $button = $(event.currentTarget);
+    var property = $button.data('property');
+    if (!property) return;
+    var propertyPath = property.split('.');
+    property = propertyPath.pop();
+    
+    var value = $button.data('value');
+    this.setDisplayOption(propertyPath, property, value);
+    $('input[data-property="' + $button.data('property') + '"]').val(value);
+  }
+  
+  setDisplayOption(propertyPath, property, value) {
     var object = this.displayOptions;
     _(propertyPath).each(function(p) {
       object = object[p];
@@ -410,8 +431,8 @@ App = class {
     if (object[property] != value) {
       object[property] = value;
       this.updateCanvas();
+      this.saveDisplayOptions();
     }
-    this.saveDisplayOptions();
   }
   
   /**
@@ -567,8 +588,9 @@ App = class {
     
     $canvas.css('width', pageSize[0] + 'px');
     $canvas.css('height', pageSize[1] + 'px');
+    $canvas.addClass('loaded');
     paper.setup(canvas);
-    
+
     // Create the background color
     if (pageOptions.backgroundColor != '#FFFFFF') {
       new paper.Shape.Rectangle({
@@ -714,7 +736,7 @@ App = class {
         }
         
         // Create place labels
-        if (!placeLabelOptions.hide) {
+        if (placeLabelOptions.show) {
           var center = this.coordinateToPageXY(placemark.bounds.center, topLeftXY, aspect, pageMargin);
           
           var textOptions = {
@@ -795,15 +817,14 @@ App = class {
     $('.row.shapes-fillStyle-fields').toggle(shapeOptions.fillStyle == 'custom');
 
     var placeLabelOptions = options.placeLabels;
-    $('fieldset.placeLabels .container.fields').toggle(!placeLabelOptions.hide);
+    $('fieldset.placeLabels .container.fields').toggle(placeLabelOptions.show);
     $('select[data-property="placeLabels.style"]').val(placeLabelOptions.style);
     $('.row.placeLabels-style-flag-fields').toggle(placeLabelOptions.style == 'flag');
     $('select[data-property="placeLabels.flagDirection"]').val(placeLabelOptions.flagDirection);
     $('select[data-property="placeLabels.flagAnchorShape"]').val(placeLabelOptions.flagAnchorShape);
     
     var measurementOptions = options.measurements;
-    $('fieldset.measurements .container.fields').toggle(measurementOptions.hide);
-    
+    $('fieldset.measurements .container.fields').toggle(measurementOptions.show);
   }
   
   loadDisplayOptions() {
