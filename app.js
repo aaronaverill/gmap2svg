@@ -1,4 +1,4 @@
-var ppi = 72; // Points per inch
+var ppi = 96; // Points per inch
 var corsProxyUrl  = 'https://cors-anywhere.herokuapp.com/';
 var textVerticalCenterOffset = 0.4;
 
@@ -336,6 +336,7 @@ App = class {
   constructor() {
     var me = this;
     me.kmlData = null;
+    me.pageZoom = 1;
     this.loadDisplayOptions();
     
     // Generic controls handled via data properties
@@ -420,6 +421,16 @@ App = class {
     $('fieldset.' + group + ' .container.fields').toggle(show);
   }
   
+  zoomIn() {
+    this.pageZoom *= 1.1;
+    this.updateCanvas();
+  }
+  
+  zoomOut() {
+    this.pageZoom /= 1.1;
+    this.updateCanvas();
+  }
+  
   setDisplayOption(propertyPath, property, value) {
     var object = this.displayOptions;
     _(propertyPath).each(function(p) {
@@ -497,6 +508,7 @@ App = class {
   
   handleMapLoad(gmapUrl, mid, kmlDoc, status, xhr) {
     var me = this;
+    me.pageZoom = 1;
     //try {
       // Parse the KML document
       me.kmlData = KmlParser.parse(kmlDoc);
@@ -583,10 +595,15 @@ App = class {
       pageOptions.margin*ppi
     ]
     
-    $canvas.css('width', pageSize[0] + 'px');
-    $canvas.css('height', pageSize[1] + 'px');
+    var canvasSize = _(pageSize).map(function(length) {
+      return length*this.pageZoom;
+    }, this);
+
+    $canvas.css('width', canvasSize[0] + 'px');
+    $canvas.css('height', canvasSize[1] + 'px');
     $canvas.addClass('loaded');
     paper.setup(canvas);
+    paper.view.scale(this.pageZoom, new paper.Point(0, 0));
 
     // Create the background color
     if (pageOptions.backgroundColor != '#FFFFFF') {
@@ -879,7 +896,12 @@ App = class {
   }
   
   saveSvg(filename) {
+    var previousZoom = this.pageZoom;
+    this.pageZoom = 1;
+    this.updateCanvas();
     var text = paper.project.exportSVG({asString:true});
+    this.pageZoom = previousZoom;
+    this.updateCanvas();
     var blob = new Blob([text], {type: 'image/svg+xml;charset=utf-8'});
     saveAs(blob, filename);
   }
@@ -982,6 +1004,12 @@ $(function() {
   });
   $('#save-svg-button').on('click', function() {
     app.saveSvg('map.svg');
+  });
+  $('#zoom-in-button').on('click', function() {
+    app.zoomIn();
+  });
+  $('#zoom-out-button').on('click', function() {
+    app.zoomOut();
   });
   app.refreshDisplayOptions();
   app.selectMap();

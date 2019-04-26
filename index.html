@@ -253,18 +253,24 @@
     <div class="container-fluid main-container">
       <div class="row main">
         <div class="col svg-wrapper">
+          <canvas id="svg-canvas"></canvas>
           <div class="loading-spinner" style="display:none">
             <div class="d-flex justify-content-center">
-              <div class="spinner-border text-primary" role="status"></div>
+              <div class="spinner-border text-dark" role="status"></div>
             </div>
           </div>
-          <canvas id="svg-canvas"></canvas>
-        </div>
-        <div class="col sidebar">
-          <div class="top-buttons">
+          <div class="control-container top-left">
             <button id="open-map-button" class="btn btn-primary">Open Map</button>
             <button id="save-svg-button" class="btn btn-secondary">Save</button>
           </div>
+          <div class="control-container bottom-right">
+            <div class="btn-group-vertical zoom-buttons">
+              <button id="zoom-in-button" class="btn btn-light">+</button>
+              <button id="zoom-out-button" class="btn btn-light">-</button>
+            </div>
+          </div>
+        </div>
+        <div class="col sidebar">
           <div class="display-options">
           </div>
         </div>
