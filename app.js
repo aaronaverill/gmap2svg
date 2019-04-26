@@ -917,8 +917,8 @@ App = class {
       } catch (err) {}
       
       // Incorporate saved folder options
-      var folderIndexes = {}     
-      var folderOptions = this.displayOptions.folders;      
+      var folderIndexes = {}
+      var folderOptions = this.displayOptions.folders;
       this.displayOptions.folders = _(this.kmlData.folders).map(function(folder) {
         var folderId = this.nameToId(folder.name);
         if (!_(folderIndexes).has(folderId)) {
@@ -936,39 +936,40 @@ App = class {
         var savedFolderOptions = _(folderOptions).where({id: folderId});
         
         if (folderIndex < savedFolderOptions.length) {
-          options = $.extend(true, options, savedFolderOptions[folderIndex]);
+          var saved = savedFolderOptions[folderIndex];
+          options = $.extend(true, options, saved);
+          
+          // Incorporate saved place options
+          var placeIndexes = {}
+          var placeOptions = saved.places;
+          options.places = _(folder.placemarks).map(function(place) {
+            var placeId = this.nameToId(place.name);
+            if (!_(placeIndexes).has(placeId)) {
+              placeIndexes[placeId] = 0;
+            } else {
+              placeIndexes[placeId]++;
+            }
+            var placeIndex = placeIndexes[placeId];
+            
+            // Default place options.
+            var newPlaceOptions = {
+              show: true,
+            }
+            var savedPlaceOptions = _(placeOptions).where({id: placeId});
+            
+            if (placeIndex < savedPlaceOptions.length) {
+              newPlaceOptions = $.extend(true, newPlaceOptions, savedPlaceOptions[placeIndex]);
+            }
+            
+            newPlaceOptions.id = placeId;
+            newPlaceOptions.index = placeIndex;
+            
+            return newPlaceOptions;
+          }, this);
         }
         
         options.id = folderId;
         options.index = folderIndex;
-        
-        // Incorporate saved place options
-        var placeIndexes = {}     
-        var placeOptions = folderOptions.places;      
-        options.places = _(folder.placemarks).map(function(place) {
-          var placeId = this.nameToId(place.name);
-          if (!_(placeIndexes).has(placeId)) {
-            placeIndexes[placeId] = 0;
-          } else {
-            placeIndexes[placeId]++;
-          }
-          var placeIndex = placeIndexes[placeId];
-          
-          // Default place options.
-          var options = {
-            show: true,
-          }
-          var savedPlaceOptions = _(placeOptions).where({id: placeId});
-          
-          if (placeIndex < savedPlaceOptions.length) {
-            options = $.extend(true, options, savedPlaceOptions[placeIndex]);
-          }
-          
-          options.id = placeId;
-          options.index = placeIndex;
-          
-          return options;
-        }, this);
         
         return options;
       }, this);
