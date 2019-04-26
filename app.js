@@ -572,7 +572,7 @@ App = class {
       me.saveDisplayOptions();
       
       if (history.pushState) {
-        history.pushState(null, null, '#mid=' + mid);
+        history.pushState(null, null, '?mid=' + mid);
       }
     } catch (err) {
       ErrorDialog.show("Couldn't load map", err, 'Close', function() {
@@ -936,38 +936,40 @@ App = class {
         }
         var savedFolderOptions = _(folderOptions).where({id: folderId});
         
+        var savedOptions = null;
         if (folderIndex < savedFolderOptions.length) {
-          var saved = savedFolderOptions[folderIndex];
-          options = $.extend(true, options, saved);
+          var savedOptions = savedFolderOptions[folderIndex];
+          options = $.extend(true, options, savedOptions);
+        }
+        
+        // Incorporate saved place options
+        var placeIndexes = {}
+        options.places = _(folder.placemarks).map(function(place) {
+          var placeId = this.nameToId(place.name);
+          if (!_(placeIndexes).has(placeId)) {
+            placeIndexes[placeId] = 0;
+          } else {
+            placeIndexes[placeId]++;
+          }
+          var placeIndex = placeIndexes[placeId];
           
-          // Incorporate saved place options
-          var placeIndexes = {}
-          var placeOptions = saved.places;
-          options.places = _(folder.placemarks).map(function(place) {
-            var placeId = this.nameToId(place.name);
-            if (!_(placeIndexes).has(placeId)) {
-              placeIndexes[placeId] = 0;
-            } else {
-              placeIndexes[placeId]++;
-            }
-            var placeIndex = placeIndexes[placeId];
-            
-            // Default place options.
-            var newPlaceOptions = {
-              show: true,
-            }
-            var savedPlaceOptions = _(placeOptions).where({id: placeId});
+          // Default place options.
+          var newPlaceOptions = {
+            show: true,
+          }
+          if (savedOptions) {
+            var savedPlaceOptions = _(savedOptions.places).where({id: placeId});
             
             if (placeIndex < savedPlaceOptions.length) {
               newPlaceOptions = $.extend(true, newPlaceOptions, savedPlaceOptions[placeIndex]);
             }
-            
-            newPlaceOptions.id = placeId;
-            newPlaceOptions.index = placeIndex;
-            
-            return newPlaceOptions;
-          }, this);
-        }
+          }
+          
+          newPlaceOptions.id = placeId;
+          newPlaceOptions.index = placeIndex;
+          
+          return newPlaceOptions;
+        }, this);
         
         options.id = folderId;
         options.index = folderIndex;
@@ -1105,9 +1107,9 @@ $(function() {
   app.refreshDisplayOptions();
   
   var urlMid = null;
-  if(window.location.hash) {
+  if(window.location.search) {
     var hashParts = {};
-    _(window.location.hash.substring(1).split('&')).each(function(part) {
+    _(window.location.search.substring(1).split('&')).each(function(part) {
       var keyValue = part.split('=');
       if (keyValue.length < 2) keyValue.push(true);
       if (keyValue.length > 1) hashParts[keyValue[0]] = keyValue[1];
