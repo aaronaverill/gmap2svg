@@ -307,6 +307,9 @@ var defaultDisplayOptions = {
     fillStyle: 'map',
     fillColor: '#000000',
   },
+  icons: {
+    show: true,
+  },
   placeLabels: {
     show: true,
     style: 'flag',
@@ -348,8 +351,9 @@ App = class {
     $('.display-options').on('click', '.color-button', function(event) {
       me.handleColorButtonClick(event);
     });
-    
-    // Page section
+    $('.display-options').on('change', '.field-section.with-checkbox input[type="checkbox"]', function(event) {
+      me.handleSectionShowChange(event);
+    });
     
     // Shapes section
     $('.display-options').on('change', 'select[data-property="shapes.lineStyle"]', function(event) {
@@ -362,25 +366,9 @@ App = class {
     });
     
     // Place labels section
-    $('.display-options').on('change', '#placeLabels-show', function(event) {
-      var show = $(this).is(':checked');
-      me.displayOptions.placeLabels.show = show
-      $('fieldset.placeLabels .container.fields').toggle(show);
-      me.updateCanvas();
-      me.saveDisplayOptions();
-    });
     $('.display-options').on('change', 'select[data-property="placeLabels.style"]', function(event) {
       var style = $(this).val();
       $('.row.placeLabels-style-flag-fields').toggle(style == 'flag');
-    });
-    
-    // Measurement section
-    $('.display-options').on('change', '#measurements-show', function(event) {
-      var show = $(this).is(':checked');
-      me.displayOptions.measurements.show = show
-      $('fieldset.measurements .container.fields').toggle(show);
-      me.updateCanvas();
-      me.saveDisplayOptions();
     });
     
     // Layers section
@@ -421,6 +409,15 @@ App = class {
     var value = $button.data('value');
     this.setDisplayOption(propertyPath, property, value);
     $('input[data-property="' + $button.data('property') + '"]').val(value);
+  }
+  
+  handleSectionShowChange(event) {
+    var $checkbox = $(event.currentTarget);
+    var group = $checkbox.data('group');
+    if (!group) return;
+    var show = $checkbox.is(':checked');
+    this.setDisplayOption([group], 'show', show);
+    $('fieldset.' + group + ' .container.fields').toggle(show);
   }
   
   setDisplayOption(propertyPath, property, value) {
@@ -687,7 +684,7 @@ App = class {
         }
         
         // Create icons
-        if (placemark.point && placemark.icon) {
+        if (this.displayOptions.icons.show && placemark.point && placemark.icon) {
           var point = this.coordinateToPageXY(placemark.point.coordinate, topLeftXY, aspect, pageMargin);
           
           var raster = new paper.Raster({
