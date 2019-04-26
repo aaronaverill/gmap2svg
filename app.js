@@ -505,7 +505,7 @@ App = class {
     $('.svg-wrapper .loading-spinner').show();
     
     setTimeout(function() {
-      //try {
+      try {
         try {
           var url = new URL(gmapUrl);
         } catch (error) {
@@ -530,14 +530,12 @@ App = class {
             });
           }
         });
-      /*
       } catch (err) {
         $('.svg-wrapper .loading-spinner').hide();
         ErrorDialog.show("Couldn't load map", err, 'Close', function() {
           if (!me.kmlData) me.selectMap();
         });
       }
-      */
     }, 50);
   }
   
@@ -545,7 +543,7 @@ App = class {
     var me = this;
     me.pageZoom = 1;
     me.activePage = 'map';
-    //try {
+    try {
       // Parse the KML document
       me.kmlData = KmlParser.parse(kmlDoc);
       me.kmlData.url = gmapUrl;
@@ -572,13 +570,15 @@ App = class {
       me.refreshDisplayOptions();
       // Save the settings
       me.saveDisplayOptions();
-    /*
+      
+      if (history.pushState) {
+        history.pushState(null, null, '#mid=' + mid);
+      }
     } catch (err) {
       ErrorDialog.show("Couldn't load map", err, 'Close', function() {
         if (!me.kmlData) me.selectMap();
       });
     }
-    */
   }
   
   updateCanvas() {
@@ -1103,6 +1103,20 @@ $(function() {
     app.zoomOut();
   });
   app.refreshDisplayOptions();
-  app.selectMap();
   
+  var urlMid = null;
+  if(window.location.hash) {
+    var hashParts = {};
+    _(window.location.hash.substring(1).split('&')).each(function(part) {
+      var keyValue = part.split('=');
+      if (keyValue.length < 2) keyValue.push(true);
+      if (keyValue.length > 1) hashParts[keyValue[0]] = keyValue[1];
+    });
+    urlMid =hashParts.mid;
+  }
+  if (urlMid) {
+    app.fetchMap('https://www.google.com/maps/d/u/0/viewer?mid=' + urlMid);
+  } else {
+    app.selectMap();
+  }
 });
