@@ -859,6 +859,7 @@ App = class {
         var folderOptions = options.map.folders[fIndex];
         folderOptions.name = folder.name;
         folderOptions.placeCount = folder.placemarks.length;
+        folderOptions.hiddenPlaceCount = _(folderOptions.places).where({show:false}).length;
         if (fIndex == this.activeFolderIndex) {
           options.folder = folderOptions;
         }
