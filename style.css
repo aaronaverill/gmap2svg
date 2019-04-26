@@ -60,13 +60,6 @@ span.field-description {
   bottom: 25px;
   right: 385px;
 }
-.svg-wrapper .zoom-buttons button {
-  font-size: 20px;
-  font-weight: bold;
-  height: 38px;
-  padding: 0px;
-  width: 38px;
-}
 
 .svg-wrapper .loading-spinner {
   left: 0;
