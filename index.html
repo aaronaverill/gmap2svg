@@ -7,6 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
     
     <link rel="stylesheet" href="style.css">
 
@@ -59,7 +60,7 @@
 </div>
     </script>
     <script id="display-options" type="text/x-handlebars-template">
-<div class="map-settings">
+<div class="settings-page map-settings" data-page="map">
   <fieldset class="page">
     <div class="field-section">
       <h4>Page Options</h4>
@@ -77,22 +78,22 @@
       </div>
       <div class="row page-orientation-custom-fields">
         <div class="col col-5"><label>Width</label></div>
-        <div class="col col-6"><input value="{{page.width}}" data-property="page.width" data-type="float"></input></div>
+        <div class="col col-6"><input value="{{map.page.width}}" data-property="page.width" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>"</label></div>
       </div>
       <div class="row page-orientation-custom-fields">
         <div class="col col-5"><label>Height</label></div>
-        <div class="col col-6"><input value="{{page.height}}" data-property="page.height" data-type="float"></input></div>
+        <div class="col col-6"><input value="{{map.page.height}}" data-property="page.height" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>"</label></div>
       </div>
       <div class="row">
         <div class="col col-5"><label>Margin</label></div>
-        <div class="col col-6"><input value="{{page.margin}}" data-property="page.margin" data-type="float"></input></div>
+        <div class="col col-6"><input value="{{map.page.margin}}" data-property="page.margin" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>"</label></div>
       </div>
       <div class="row">
         <div class="col col-5"><label>Background</label></div>
-        <div class="col col-5"><input type="color" value="{{page.backgroundColor}}" data-property="page.backgroundColor"></input></div>
+        <div class="col col-5"><input type="color" value="{{map.page.backgroundColor}}" data-property="page.backgroundColor"></input></div>
         <div class="col col-1"><div class="color-button" data-property="page.backgroundColor" data-value="#B3DBA2"><div class="color-block" style="background-color:#B3DBA2"></div></div></div>
         <div class="col col-1"><div class="color-button" data-property="page.backgroundColor" data-value="#EDEDED"><div class="color-block"  style="background-color:#EDEDED"></div></div></div>
       </div>
@@ -102,20 +103,20 @@
     <div class="field-section with-checkbox">
       <h4>Measurements</h4>
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="measurements-show" {{#if measurements.show}}checked{{/if}}  data-group="measurements">
+        <input type="checkbox" class="custom-control-input" id="measurements-show" {{#if map.measurements.show}}checked{{/if}}  data-group="measurements">
         <label class="custom-control-label" for="measurements-show"></label>
       </div>
     </div>
     <div class="container fields">
       <div class="row">
         <div class="col col-5"><label>Color</label></div>
-        <div class="col col-6"><input type="color" value="{{measurements.color}}" data-property="measurements.color"></input></div>
+        <div class="col col-6"><input type="color" value="{{map.measurements.color}}" data-property="measurements.color"></input></div>
         <div class="col col-1"><div class="color-button" data-property="measurements.color" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
       </div>
       <div class="row">
         <div class="col col-5"><label>Font</label></div>
-        <div class="col col-4"><input value="{{measurements.fontFamily}}" data-property="measurements.fontFamily"></input></div>
-        <div class="col col-2" style="padding-left: 2px"><input value="{{measurements.fontSize}}" data-property="measurements.fontSize" data-type="float"></input></div>
+        <div class="col col-4"><input value="{{map.measurements.fontFamily}}" data-property="measurements.fontFamily"></input></div>
+        <div class="col col-2" style="padding-left: 2px"><input value="{{map.measurements.fontSize}}" data-property="measurements.fontSize" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>pt</label></div>
       </div>
     </div>
@@ -137,7 +138,7 @@
       </div>
       <div class="row shapes-lineStyle-fields">
         <div class="col col-5"><label>&nbsp;</label></div>
-        <div class="col col-7"><input type="color" value="{{shapes.lineColor}}" data-property="shapes.lineColor"></input></div>
+        <div class="col col-7"><input type="color" value="{{map.shapes.lineColor}}" data-property="shapes.lineColor"></input></div>
       </div>
       <div class="row">
         <div class="col col-5"><label>Fill Color</label></div>
@@ -151,7 +152,7 @@
       </div>
       <div class="row shapes-fillStyle-fields">
         <div class="col col-5"><label>&nbsp;</label></div>
-        <div class="col col-7"><input type="color" value="{{shapes.fillColor}}" data-property="shapes.fillColor"></input></div>
+        <div class="col col-7"><input type="color" value="{{map.shapes.fillColor}}" data-property="shapes.fillColor"></input></div>
       </div>
     </div>
   </fieldset>
@@ -159,7 +160,7 @@
     <div class="field-section with-checkbox">
       <h4>Icons</h4>
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="icons-show" {{#if icons.show}}checked{{/if}} data-group="icons">
+        <input type="checkbox" class="custom-control-input" id="icons-show" {{#if map.icons.show}}checked{{/if}} data-group="icons">
         <label class="custom-control-label" for="icons-show"></label>
       </div>
     </div>
@@ -170,7 +171,7 @@
     <div class="field-section with-checkbox">
       <h4>Labels</h4>
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="placeLabels-show" {{#if placeLabels.show}}checked{{/if}}  data-group="placeLabels">
+        <input type="checkbox" class="custom-control-input" id="placeLabels-show" {{#if map.placeLabels.show}}checked{{/if}}  data-group="placeLabels">
         <label class="custom-control-label" for="placeLabels-show"></label>
       </div>
     </div>
@@ -186,13 +187,13 @@
       </div>
       <div class="row">
         <div class="col col-5"><label>Color</label></div>
-        <div class="col col-6"><input type="color" value="{{placeLabels.color}}" data-property="placeLabels.color"></input></div>
+        <div class="col col-6"><input type="color" value="{{map.placeLabels.color}}" data-property="placeLabels.color"></input></div>
         <div class="col col-1"><div class="color-button" data-property="placeLabels.color" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
       </div>
       <div class="row">
         <div class="col col-5"><label>Font</label></div>
-        <div class="col col-4"><input value="{{placeLabels.fontFamily}}" data-property="placeLabels.fontFamily"></input></div>
-        <div class="col col-2" style="padding-left: 2px"><input value="{{placeLabels.fontSize}}" data-property="placeLabels.fontSize" data-type="float"></input></div>
+        <div class="col col-4"><input value="{{map.placeLabels.fontFamily}}" data-property="placeLabels.fontFamily"></input></div>
+        <div class="col col-2" style="padding-left: 2px"><input value="{{map.placeLabels.fontSize}}" data-property="placeLabels.fontSize" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>pt</label></div>
       </div>
       
@@ -210,7 +211,7 @@
       </div>
       <div class="row placeLabels-style-flag-fields">
         <div class="col col-5"><label>Color</label></div>
-        <div class="col col-6"><input type="color" value="{{placeLabels.flagColor}}" data-property="placeLabels.flagColor"></input></div>
+        <div class="col col-6"><input type="color" value="{{map.placeLabels.flagColor}}" data-property="placeLabels.flagColor"></input></div>
         <div class="col col-1"><div class="color-button" data-property="placeLabels.flagColor" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
       </div>
       <div class="row placeLabels-style-flag-fields">
@@ -225,27 +226,63 @@
             <option value="none">None</option>
           </select>
         </div>
-        <div class="col col-2" style="padding-left: 2px"><input value="{{placeLabels.flagAnchorSize}}" data-property="placeLabels.flagAnchorSize" data-type="float"></input></div>
+        <div class="col col-2" style="padding-left: 2px"><input value="{{map.placeLabels.flagAnchorSize}}" data-property="placeLabels.flagAnchorSize" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>px</label></div>
       </div>
     </div>
   </fieldset>
-</div>
-<div class="folder-settings">
   <div class="field-section">
     <h4>Layers</h4>
   </div>
-{{#each folders}}
-  <fieldset class="folder">
-    <div class="field-section with-checkbox small-title">
-      <h6>{{name}}</h6>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input folder-hide" id="folder-{{id}}-{{index}}" {{#unless hide}}checked{{/unless}} data-index="{{@index}}">
-        <label class="custom-control-label" for="folder-{{id}}-{{index}}"></label>
+  <div class="folder-list">
+  {{#each map.folders}}
+    <fieldset class="folder" data-index="{{@index}}">
+      <div class="field-section with-checkbox small-title">
+        <h6>{{name}}</h6>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input folder-show" id="folder-{{@index}}" {{#if show}}checked{{/if}}>
+          <label class="custom-control-label" for="folder-{{@index}}"></label>
+        </div>
+      </div>
+      <div class="container fields">
+        <div class="row">
+          <div class="col col-9"><span class="place-arrow">&#10148;</span> {{placeCount}} places</div>
+          <div class="col col-3"><button class="btn btn-light btn-sm float-right folder-options">Options</button></div>
+        </div>
+      </div>
+    </fieldset>
+  {{/each}}
+  </div>
+</div>
+<div class="settings-page folder-settings" data-page="folder">
+  <div class="container">
+    <div class="row title-row">
+      <div class="col col-1">
+        <button class="btn btn-light btn-sm btn-round folder-back"><i class="fa fa-chevron-left"></i></button>
+      </div>
+      <div class="col col-11">
+        <h4>{{folder.name}}</h4>
       </div>
     </div>
-  </fieldset>
-{{/each}}
+  </div>
+  <div class="field-section">
+    <h4>Places</h4>
+  </div>
+  <div class="place-list">
+  {{#each folder.places}}
+    <fieldset class="place" data-index="{{@index}}">
+      <div class="field-section with-checkbox small-title">
+        <h6>{{name}}</h6>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input place-show" id="place-{{@index}}" {{#if show}}checked{{/if}}>
+          <label class="custom-control-label" for="place-{{@index}}"></label>
+        </div>
+      </div>
+      <div class="container fields">
+      </div>
+    </fieldset>
+  {{/each}}
+  </div>
 </div>
     </script>
   </head>

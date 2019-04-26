@@ -317,6 +317,7 @@ var defaultDisplayOptions = {
     fontSize: 7,
     fontFamily: 'Arial',
     fontWeight: 'normal',
+    // TODO: flagLength: 30
     flagDirection: 'aboveright',
     flagColor: '#000000',
     flagAnchorShape: 'circle',
@@ -337,8 +338,15 @@ App = class {
     var me = this;
     me.kmlData = null;
     me.pageZoom = 1;
+    me.activePage = 'map';
+    me.activeFolderIndex = 0;
     this.loadDisplayOptions();
     
+    // Navigation
+    $('.display-options').on('click', '.settings-page.folder-settings .btn.folder-back', function(event) {
+      me.activePage = 'map';
+      me.refreshDisplayOptions();
+    });
     // Generic controls handled via data properties
     $('.display-options').on('input', 'input', function(event) {
       me.handleDisplayOptionChange(event);
@@ -373,13 +381,32 @@ App = class {
     });
     
     // Layers section
-    $('.display-options').on('change', 'input.folder-hide', function(event) {
+    $('.display-options').on('change', 'input.folder-show', function(event) {
       var $checkbox = $(this);
-      var folderIndex = $checkbox.data('index');
+      var $folderGroup = $checkbox.closest('fieldset');
+      var folderIndex = $folderGroup.data('index');
       var show = $checkbox.is(':checked');
-      me.displayOptions.folders[folderIndex].hide = !show;
+      me.displayOptions.folders[folderIndex].show = show;
       me.updateCanvas();
       me.saveDisplayOptions();
+      $('.container.fields', $folderGroup).toggle(show);
+    });
+    
+    // Folder options
+    $('.display-options').on('click', '.folder-list fieldset.folder .btn.folder-options', function(event) {
+      me.handleShowFolderOptionsClick(event);
+    });
+    
+    // Folder places section
+    $('.display-options').on('change', 'input.place-show', function(event) {
+      var $checkbox = $(this);
+      var $placeGroup = $checkbox.closest('fieldset');
+      var placeIndex = $placeGroup.data('index');
+      var show = $checkbox.is(':checked');
+      me.displayOptions.folders[me.activeFolderIndex].places[placeIndex].show = show;
+      me.updateCanvas();
+      me.saveDisplayOptions();
+      $('.container.fields', $placeGroup).toggle(show);
     });
   }
   
@@ -419,6 +446,14 @@ App = class {
     var show = $checkbox.is(':checked');
     this.setDisplayOption([group], 'show', show);
     $('fieldset.' + group + ' .container.fields').toggle(show);
+  }
+  
+  handleShowFolderOptionsClick(event) {
+    var $button = $(event.currentTarget);
+    var $folderGroup = $button.closest('fieldset');
+    this.activePage = 'folder';
+    this.activeFolderIndex = $folderGroup.data('index');
+    this.refreshDisplayOptions();
   }
   
   zoomIn() {
@@ -509,6 +544,7 @@ App = class {
   handleMapLoad(gmapUrl, mid, kmlDoc, status, xhr) {
     var me = this;
     me.pageZoom = 1;
+    me.activePage = 'map';
     //try {
       // Parse the KML document
       me.kmlData = KmlParser.parse(kmlDoc);
@@ -554,8 +590,13 @@ App = class {
     
     // Copy the data and display options
     var data = $.extend(true, {}, this.kmlData);
+    _(data.folders).filter(function(folder, fIndex) {
+      folder.placemarks = _(folder.placemarks).filter(function(placemark, pIndex) {
+        return folderOptions[fIndex].places[pIndex].show;
+      });
+    });
     data.folders = _(data.folders).filter(function(folder, index) {
-      return !folderOptions[index].hide;
+      return folderOptions[index].show;
     });
     
     // Calculate the coordinate boundaries
@@ -810,35 +851,53 @@ App = class {
   
   refreshDisplayOptions() {
     // Update the sidebar display options.
-    var options = $.extend(true, {}, this.displayOptions);
+    var options = {
+      map: $.extend(true, {}, this.displayOptions)
+    }
     if (this.kmlData) {
-      _(this.kmlData.folders).each(function(folder, index) {
-        options.folders[index].name = folder.name;
-      });
+      _(this.kmlData.folders).each(function(folder, fIndex) {
+        var folderOptions = options.map.folders[fIndex];
+        folderOptions.name = folder.name;
+        folderOptions.placeCount = folder.placemarks.length;
+        if (fIndex == this.activeFolderIndex) {
+          options.folder = folderOptions;
+        }
+        _(folder.placemarks).each(function(placemark, pIndex) {
+          folderOptions.places[pIndex].name = placemark.name;
+        });
+      }, this);
     }
     
     var html = Handlebars.compile($('#display-options').html())(options);
     $('.sidebar .display-options').html(html);
     
-    var pageOptions = options.page;
+    $('.sidebar .display-options .settings-page').hide();
+    $('.sidebar .display-options .settings-page[data-page="' + this.activePage + '"]').show();
+    
+    var pageOptions = options.map.page;
     $('select[data-property="page.orientation"]').val(pageOptions.orientation);
     $('.row.page-orientation-custom-fields').toggle(pageOptions.orientation == 'custom');
     
-    var shapeOptions = options.shapes;
+    var shapeOptions = options.map.shapes;
     $('select[data-property="shapes.lineStyle"]').val(shapeOptions.lineStyle);
     $('.row.shapes-lineStyle-fields').toggle(shapeOptions.lineStyle == 'custom');
     $('select[data-property="shapes.fillStyle"]').val(shapeOptions.fillStyle);
     $('.row.shapes-fillStyle-fields').toggle(shapeOptions.fillStyle == 'custom');
 
-    var placeLabelOptions = options.placeLabels;
+    var placeLabelOptions = options.map.placeLabels;
     $('fieldset.placeLabels .container.fields').toggle(placeLabelOptions.show);
     $('select[data-property="placeLabels.style"]').val(placeLabelOptions.style);
     $('.row.placeLabels-style-flag-fields').toggle(placeLabelOptions.style == 'flag');
     $('select[data-property="placeLabels.flagDirection"]').val(placeLabelOptions.flagDirection);
     $('select[data-property="placeLabels.flagAnchorShape"]').val(placeLabelOptions.flagAnchorShape);
     
-    var measurementOptions = options.measurements;
+    var measurementOptions = options.map.measurements;
     $('fieldset.measurements .container.fields').toggle(measurementOptions.show);
+    
+    _(options.map.folders).each(function(folder, index) {
+      var $folderGroup = $('.sidebar .folder-list fieldset.folder[data-index="' + index + '"]');
+      $('.container.fields', $folderGroup).toggle(folder.show);
+    });
   }
   
   loadDisplayOptions() {
@@ -856,7 +915,8 @@ App = class {
           this.displayOptions = $.extend(true, this.displayOptions, JSON.parse(savedDisplayOptions));
         }
       } catch (err) {}
-      // Save current folder settings.
+      
+      // Incorporate saved folder options
       var folderIndexes = {}     
       var folderOptions = this.displayOptions.folders;      
       this.displayOptions.folders = _(this.kmlData.folders).map(function(folder) {
@@ -870,7 +930,8 @@ App = class {
         
         // Default folder options.
         var options = {
-          hide: false
+          show: true,
+          places: []
         }
         var savedFolderOptions = _(folderOptions).where({id: folderId});
         
@@ -880,6 +941,34 @@ App = class {
         
         options.id = folderId;
         options.index = folderIndex;
+        
+        // Incorporate saved place options
+        var placeIndexes = {}     
+        var placeOptions = folderOptions.places;      
+        options.places = _(folder.placemarks).map(function(place) {
+          var placeId = this.nameToId(place.name);
+          if (!_(placeIndexes).has(placeId)) {
+            placeIndexes[placeId] = 0;
+          } else {
+            placeIndexes[placeId]++;
+          }
+          var placeIndex = placeIndexes[placeId];
+          
+          // Default place options.
+          var options = {
+            show: true,
+          }
+          var savedPlaceOptions = _(placeOptions).where({id: placeId});
+          
+          if (placeIndex < savedPlaceOptions.length) {
+            options = $.extend(true, options, savedPlaceOptions[placeIndex]);
+          }
+          
+          options.id = placeId;
+          options.index = placeIndex;
+          
+          return options;
+        }, this);
         
         return options;
       }, this);
