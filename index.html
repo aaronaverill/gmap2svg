@@ -282,18 +282,10 @@
         <div class="row folder-placeLabels-style-flag-fields">
           <div class="col col-5"><label>Flag</label></div>
           <div class="col col-4">
-            <input type="range" class="custom-range" min="0" max="330" step="30" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagAngle">
-          <!--
-            <select data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagDirection">
-              <option value="aboveright">Above Right</option>
-              <option value="belowright">Below Right</option>
-              <option value="belowleft">Below Left</option>
-              <option value="aboveleft">Above Left</option>
-            </select>
-            -->
+            <input type="range" class="custom-range" value="{{displayOptions.placeLabels.flagAngle}}" min="0" max="330" step="30" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagAngle">
           </div>
           <div class="col col-3">
-            <input type="range" class="custom-range" min="10" max="100" step="10" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagLength">
+            <input type="range" class="custom-range" value="{{displayOptions.placeLabels.flagLength}}" min="10" max="100" step="10" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagLength">
           </div>
         </div>
       </div>
