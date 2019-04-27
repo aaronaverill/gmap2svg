@@ -964,10 +964,10 @@ App = class {
         }
         var savedFolderOptions = _(folderOptions).where({id: folderId});
         
-        var savedOptions = null;
+        var folderSavedOptions = null;
         if (folderIndex < savedFolderOptions.length) {
-          var savedOptions = savedFolderOptions[folderIndex];
-          savedOptions = _(savedOptions).pick('show', 'placeLabels');
+          var folderSavedOptions = savedFolderOptions[folderIndex];
+          var savedOptions = _(folderSavedOptions).pick('show', 'placeLabels');
           savedOptions.placeLabels = _(savedOptions.placeLabels).pick('style', 'fontSize', 'fontFamily', 'fontWeight', 'flagColor', 'flagAnchorShape', 'flagAnchorSize');
           options = $.extend(true, options, savedOptions);
         }
@@ -988,14 +988,14 @@ App = class {
             show: true,
             placeLabels: {},
           }
-          if (savedOptions) {
-            var savedPlaceOptions = _(savedOptions.places).where({id: placeId});
+          if (folderSavedOptions) {
+            var savedPlaceOptions = _(folderSavedOptions.places).where({id: placeId});
             
             if (placeIndex < savedPlaceOptions.length) {
-              savedPlaceOptions = savedPlaceOptions[placeIndex];
-              savedPlaceOptions = _(savedPlaceOptions).pick('show', 'placeLabels');
-              savedPlaceOptions.placeLabels = _(savedPlaceOptions.placeLabels).pick('flagAngle', 'flagLength');
-              newPlaceOptions = $.extend(true, newPlaceOptions, savedPlaceOptions);
+              var placeSavedOptions = savedPlaceOptions[placeIndex];
+              var savedOptions = _(placeSavedOptions).pick('show', 'placeLabels');
+              savedOptions.placeLabels = _(savedOptions.placeLabels).pick('flagAngle', 'flagLength');
+              newPlaceOptions = $.extend(true, newPlaceOptions, savedOptions);
             }
           }
           
