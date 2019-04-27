@@ -99,31 +99,9 @@
       </div>
     </div>
   </fieldset>
-  <fieldset class="measurements">
-    <div class="field-section with-checkbox">
-      <h4>Measurements</h4>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="measurements-show" {{#if map.measurements.show}}checked{{/if}}  data-group="measurements">
-        <label class="custom-control-label" for="measurements-show"></label>
-      </div>
-    </div>
-    <div class="container fields">
-      <div class="row">
-        <div class="col col-5"><label>Color</label></div>
-        <div class="col col-6"><input type="color" value="{{map.measurements.color}}" data-property="measurements.color"></input></div>
-        <div class="col col-1"><div class="color-button" data-property="measurements.color" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
-      </div>
-      <div class="row">
-        <div class="col col-5"><label>Font</label></div>
-        <div class="col col-4"><input value="{{map.measurements.fontFamily}}" data-property="measurements.fontFamily"></input></div>
-        <div class="col col-2" style="padding-left: 2px"><input value="{{map.measurements.fontSize}}" data-property="measurements.fontSize" data-type="float"></input></div>
-        <div class="col col-1 text-center"><label>pt</label></div>
-      </div>
-    </div>
-  </fieldset>
   <fieldset class="shapes">
     <div class="field-section">
-      <h4>Shape Options</h4>
+      <h4>Shapes</h4>
     </div>
     <div  class="container">
       <div class="row">
@@ -156,17 +134,6 @@
       </div>
     </div>
   </fieldset>
-  <fieldset class="icons">
-    <div class="field-section with-checkbox">
-      <h4>Icons</h4>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="icons-show" {{#if map.icons.show}}checked{{/if}} data-group="icons">
-        <label class="custom-control-label" for="icons-show"></label>
-      </div>
-    </div>
-    <div class="container fields">
-    </div>
-  </fieldset>
   <fieldset class="placeLabels">
     <div class="field-section with-checkbox">
       <h4>Labels</h4>
@@ -176,15 +143,6 @@
       </div>
     </div>
     <div class="container fields">
-      <div class="row">
-        <div class="col col-5"><label>Style</label></div>
-        <div class="col col-7">
-          <select data-property="placeLabels.style">
-            <option value="center">Center</option>
-            <option value="flag">Flag</option>
-          </select>
-        </div>
-      </div>
       <div class="row">
         <div class="col col-5"><label>Color</label></div>
         <div class="col col-6"><input type="color" value="{{map.placeLabels.color}}" data-property="placeLabels.color"></input></div>
@@ -196,39 +154,39 @@
         <div class="col col-2" style="padding-left: 2px"><input value="{{map.placeLabels.fontSize}}" data-property="placeLabels.fontSize" data-type="float"></input></div>
         <div class="col col-1 text-center"><label>pt</label></div>
       </div>
-      
-      <div class="row placeLabels-style-flag-fields"><div class="col"><h6>Flag Options</h6></div></div>
-      <div class="row placeLabels-style-flag-fields">
-        <div class="col col-5"><label>Direction</label></div>
-        <div class="col col-7">
-          <select data-property="placeLabels.flagDirection">
-            <option value="aboveright">Above Right</option>
-            <option value="belowright">Below Right</option>
-            <option value="belowleft">Below Left</option>
-            <option value="aboveleft">Above Left</option>
-          </select>
-        </div>
+    </div>
+  </fieldset>
+  <fieldset class="measurements">
+    <div class="field-section with-checkbox">
+      <h4>Measurements</h4>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="measurements-show" {{#if map.measurements.show}}checked{{/if}}  data-group="measurements">
+        <label class="custom-control-label" for="measurements-show"></label>
       </div>
-      <div class="row placeLabels-style-flag-fields">
+    </div>
+    <div class="container fields">
+      <div class="row">
         <div class="col col-5"><label>Color</label></div>
-        <div class="col col-6"><input type="color" value="{{map.placeLabels.flagColor}}" data-property="placeLabels.flagColor"></input></div>
-        <div class="col col-1"><div class="color-button" data-property="placeLabels.flagColor" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
+        <div class="col col-6"><input type="color" value="{{map.measurements.color}}" data-property="measurements.color"></input></div>
+        <div class="col col-1"><div class="color-button" data-property="measurements.color" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
       </div>
-      <div class="row placeLabels-style-flag-fields">
-        <div class="col col-5"><label>Anchor</label></div>
-        <div class="col col-4">
-          <select data-property="placeLabels.flagAnchorShape">
-            <option value="circle">Circle</option>
-            <option value="square">Square</option>
-            <option value="star">Star</option>
-            <option value="diamond">Diamond</option>
-            <option value="triangle">Triangle</option>
-            <option value="none">None</option>
-          </select>
-        </div>
-        <div class="col col-2" style="padding-left: 2px"><input value="{{map.placeLabels.flagAnchorSize}}" data-property="placeLabels.flagAnchorSize" data-type="float"></input></div>
-        <div class="col col-1 text-center"><label>px</label></div>
+      <div class="row">
+        <div class="col col-5"><label>Font</label></div>
+        <div class="col col-4"><input value="{{map.measurements.fontFamily}}" data-property="measurements.fontFamily"></input></div>
+        <div class="col col-2" style="padding-left: 2px"><input value="{{map.measurements.fontSize}}" data-property="measurements.fontSize" data-type="float"></input></div>
+        <div class="col col-1 text-center"><label>pt</label></div>
       </div>
+    </div>
+  </fieldset>
+  <fieldset class="icons">
+    <div class="field-section with-checkbox">
+      <h4>Icons</h4>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="icons-show" {{#if map.icons.show}}checked{{/if}} data-group="icons">
+        <label class="custom-control-label" for="icons-show"></label>
+      </div>
+    </div>
+    <div class="container fields">
     </div>
   </fieldset>
   <div class="field-section">
@@ -265,6 +223,48 @@
       </div>
     </div>
   </div>
+  <fieldset class="placeLabels">
+    <div class="container fields">
+      <div class="row">
+        <div class="col col-12 field-section">
+          <h4>Labels</h4>
+        </div>
+      </div>
+    </div>
+    <div class="container fields">
+      <div class="row">
+        <div class="col col-5"><label>Style</label></div>
+        <div class="col col-7">
+          <select class="folder-placeLabels-style" data-property="folders.{{folder.folderIndex}}.placeLabels.style">
+            <option value="center">Center</option>
+            <option value="flag">Flag</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+      </div>      
+      <div class="row folder-placeLabels-style-flag-fields"><div class="col"><h6>Flag Options</h6></div></div>
+      <div class="row folder-placeLabels-style-flag-fields">
+        <div class="col col-5"><label>Color</label></div>
+        <div class="col col-6"><input type="color" value="{{folder.displayOptions.placeLabels.flagColor}}" data-property="folders.{{folder.folderIndex}}.placeLabels.flagColor"></input></div>
+        <div class="col col-1"><div class="color-button" data-property="folders.{{folder.folderIndex}}.placeLabels.flagColor" data-value="#000000"><div class="color-block"  style="background-color:#000000"></div></div></div>
+      </div>
+      <div class="row folder-placeLabels-style-flag-fields">
+        <div class="col col-5"><label>Anchor</label></div>
+        <div class="col col-4">
+          <select data-property="folders.{{folder.folderIndex}}.placeLabels.flagAnchorShape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="star">Star</option>
+            <option value="diamond">Diamond</option>
+            <option value="triangle">Triangle</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="col col-2" style="padding-left: 2px"><input value="{{folder.displayOptions.placeLabels.flagAnchorSize}}" data-property="folders.{{folder.folderIndex}}.placeLabels.flagAnchorSize" data-type="float"></input></div>
+        <div class="col col-1 text-center"><label>px</label></div>
+      </div>
+    </div>
+  </fieldset>
   <div class="field-section">
     <h4>Places</h4>
   </div>
@@ -279,6 +279,23 @@
         </div>
       </div>
       <div class="container fields">
+        <div class="row folder-placeLabels-style-flag-fields">
+          <div class="col col-5"><label>Flag</label></div>
+          <div class="col col-4">
+            <input type="range" class="custom-range" min="0" max="330" step="30" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagAngle">
+          <!--
+            <select data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagDirection">
+              <option value="aboveright">Above Right</option>
+              <option value="belowright">Below Right</option>
+              <option value="belowleft">Below Left</option>
+              <option value="aboveleft">Above Left</option>
+            </select>
+            -->
+          </div>
+          <div class="col col-3">
+            <input type="range" class="custom-range" min="10" max="100" step="10" data-property="folders.{{folderIndex}}.places.{{placeIndex}}.placeLabels.flagLength">
+          </div>
+        </div>
       </div>
     </fieldset>
   {{/each}}

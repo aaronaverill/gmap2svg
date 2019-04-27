@@ -312,16 +312,16 @@ var defaultDisplayOptions = {
   },
   placeLabels: {
     show: true,
-    style: 'flag',
+    style: 'center',
     color: '#000000',
     fontSize: 7,
     fontFamily: 'Arial',
     fontWeight: 'normal',
-    // TODO: flagLength: 30
-    flagDirection: 'aboveright',
     flagColor: '#000000',
     flagAnchorShape: 'circle',
     flagAnchorSize: 4,
+    flagAngle: 330,
+    flagLength: 30,
   },
   measurements: {
     show: false,
@@ -397,7 +397,11 @@ App = class {
       me.handleShowFolderOptionsClick(event);
     });
     
-    // Folder places section
+    // Folder details section
+    $('.display-options').on('change', '.folder-placeLabels-style', function(event) {
+      var style = $(this).val();
+      $('.row.folder-placeLabels-style-flag-fields').toggle(style == 'flag');
+    })
     $('.display-options').on('change', 'input.place-show', function(event) {
       var $checkbox = $(this);
       var $placeGroup = $checkbox.closest('fieldset');
@@ -445,7 +449,7 @@ App = class {
     if (!group) return;
     var show = $checkbox.is(':checked');
     this.setDisplayOption([group], 'show', show);
-    $('fieldset.' + group + ' .container.fields').toggle(show);
+    $('.map-settings fieldset.' + group + ' .container.fields').toggle(show);
   }
   
   handleShowFolderOptionsClick(event) {
@@ -571,8 +575,8 @@ App = class {
       // Save the settings
       me.saveDisplayOptions();
       
-      if (history.pushState) {
-        history.pushState(null, null, '?mid=' + mid);
+      if (window.history.pushState) {
+        window.history.pushState(null, null, '?mid=' + mid);
       }
     } catch (err) {
       ErrorDialog.show("Couldn't load map", err, 'Close', function() {
@@ -584,20 +588,27 @@ App = class {
   updateCanvas() {
     var pageOptions = this.displayOptions.page;
     var shapeOptions = this.displayOptions.shapes;
-    var placeLabelOptions = this.displayOptions.placeLabels;
     var measurementOptions = this.displayOptions.measurements;
-    var folderOptions = this.displayOptions.folders;
     
     // Copy the data and display options
     var data = $.extend(true, {}, this.kmlData);
-    _(data.folders).filter(function(folder, fIndex) {
-      folder.placemarks = _(folder.placemarks).filter(function(placemark, pIndex) {
-        return folderOptions[fIndex].places[pIndex].show;
-      });
-    });
-    data.folders = _(data.folders).filter(function(folder, index) {
-      return folderOptions[index].show;
-    });
+    data.folders = _(data.folders).map(function(folder, fIndex) {
+      folder.placemarks = _(folder.placemarks).map(function(placemark, pIndex) {
+        placemark.displayOptions = this.displayOptions.folders[fIndex].places[pIndex];
+        return placemark;
+      }, this);
+      folder.displayOptions = this.displayOptions.folders[fIndex];
+      return folder;
+    }, this);
+    
+    _(data.folders).each(function(folder, fIndex) {
+      folder.placemarks = _(folder.placemarks).filter(function(placemark) {
+        return placemark.displayOptions.show;
+      }, this);
+    }, this);
+    data.folders = _(data.folders).filter(function(folder) {
+      return folder.displayOptions.show;
+    }, this);
     
     // Calculate the coordinate boundaries
     var coordinates = [];
@@ -688,6 +699,9 @@ App = class {
       // Iterate through each placemark in the folder
       _(folder.placemarks).each(function(placemark, pIndex) {
         if (!placemark.bounds) return;
+        
+        var placeOptions = $.extend(true, {}, this.displayOptions, folder.displayOptions, placemark.displayOptions);
+        var placeLabelOptions = placeOptions.placeLabels;
         
         // Create polylines
         if (placemark.lineString) {
@@ -791,7 +805,7 @@ App = class {
         }
         
         // Create place labels
-        if (placeLabelOptions.show) {
+        if (placeLabelOptions.show && placeLabelOptions != 'none') {
           var center = this.coordinateToPageXY(placemark.bounds.center, topLeftXY, aspect, pageMargin);
           
           var textOptions = {
@@ -803,13 +817,13 @@ App = class {
             fontFamily: placeLabelOptions.fontFamily,
             fontWeight: placeLabelOptions.fontWeight,
           }
-          
+
           switch (placeLabelOptions.style) {
             case 'center':
               folderItems.labels.push(new paper.PointText(textOptions));
               break;
             case 'flag':
-              var textPoint = this.getFlagTextPoint(textOptions.point, placeLabelOptions);
+              var textPoint = this.getFlagTextPoint(center, placeLabelOptions);
               textOptions.point = [textPoint[0], textPoint[1] + placeLabelOptions.fontSize*textVerticalCenterOffset],
               textOptions.content = ' ' + textOptions.content + ' ';
               textOptions.justification = this.getFlagTextJustification(placeLabelOptions);
@@ -860,12 +874,17 @@ App = class {
         folderOptions.name = folder.name;
         folderOptions.placeCount = folder.placemarks.length;
         folderOptions.hiddenPlaceCount = _(folderOptions.places).where({show:false}).length;
+        folderOptions.displayOptions = $.extend(true, {}, this.displayOptions, this.displayOptions.folders[fIndex]);
+        folderOptions.folderIndex = fIndex;
         if (fIndex == this.activeFolderIndex) {
           options.folder = folderOptions;
         }
         _(folder.placemarks).each(function(placemark, pIndex) {
           folderOptions.places[pIndex].name = placemark.name;
-        });
+          folderOptions.places[pIndex].folderIndex = fIndex;
+          folderOptions.places[pIndex].placeIndex = pIndex;
+          folderOptions.places[pIndex].displayOptions = $.extend(true, {}, folderOptions.displayOptions, this.displayOptions.folders[fIndex].places[pIndex]);
+        }, this);
       }, this);
     }
     
@@ -888,17 +907,27 @@ App = class {
     var placeLabelOptions = options.map.placeLabels;
     $('fieldset.placeLabels .container.fields').toggle(placeLabelOptions.show);
     $('select[data-property="placeLabels.style"]').val(placeLabelOptions.style);
-    $('.row.placeLabels-style-flag-fields').toggle(placeLabelOptions.style == 'flag');
-    $('select[data-property="placeLabels.flagDirection"]').val(placeLabelOptions.flagDirection);
+    $('.map-settings .row.placeLabels-style-flag-fields').toggle(placeLabelOptions.style == 'flag');
+    //$('select[data-property="placeLabels.flagDirection"]').val(placeLabelOptions.flagDirection);
     $('select[data-property="placeLabels.flagAnchorShape"]').val(placeLabelOptions.flagAnchorShape);
     
     var measurementOptions = options.map.measurements;
     $('fieldset.measurements .container.fields').toggle(measurementOptions.show);
     
-    _(options.map.folders).each(function(folder, index) {
-      var $folderGroup = $('.sidebar .folder-list fieldset.folder[data-index="' + index + '"]');
+    _(options.map.folders).each(function(folder, fIndex) {
+      var $folderGroup = $('.sidebar .folder-list fieldset.folder[data-index="' + fIndex + '"]');
       $('.container.fields', $folderGroup).toggle(folder.show);
-    });
+      if (fIndex == this.activeFolderIndex) {
+        $('select[data-property="folders.' + fIndex + '.placeLabels.style"]').val(folder.displayOptions.placeLabels.style);
+        $('select[data-property="folders.' + fIndex + '.placeLabels.flagAnchorShape"]').val(folder.displayOptions.placeLabels.flagAnchorShape);
+        $('.row.folder-placeLabels-style-flag-fields').toggle(folder.displayOptions.placeLabels.style == 'flag');
+        _(folder.places).each(function(place, pIndex) {
+          var $placeGroup = $('.sidebar .folder-settings fieldset.place[data-index="' + pIndex + '"]');
+          $('.container.fields', $placeGroup).toggle(place.show);
+          //$('select[data-property="folders.' + fIndex + '.places.' + pIndex + '.placeLabels.flagDirection"]').val(place.displayOptions.placeLabels.flagDirection);
+        });
+      }
+    }, this);
   }
   
   loadDisplayOptions() {
@@ -932,6 +961,7 @@ App = class {
         // Default folder options.
         var options = {
           show: true,
+          placeLabels: {},
           places: []
         }
         var savedFolderOptions = _(folderOptions).where({id: folderId});
@@ -956,6 +986,7 @@ App = class {
           // Default place options.
           var newPlaceOptions = {
             show: true,
+            placeLabels: {},
           }
           if (savedOptions) {
             var savedPlaceOptions = _(savedOptions.places).where({id: placeId});
@@ -1023,20 +1054,18 @@ App = class {
   }
   
   getFlagTextPoint(point, options) {
-    var offset = [30,10];
-    if (_(['aboveright', 'aboveleft']).contains(options.flagDirection)) {
-      offset[1] = -offset[1];
-    }
-    if (_(['belowleft', 'aboveleft']).contains(options.flagDirection)) {
-      offset[0] = -offset[0];
-    }
+    var offset = [
+      Math.cos(options.flagAngle*Math.PI/180) * options.flagLength,
+      Math.sin(options.flagAngle*Math.PI/180) * options.flagLength
+    ]
     return _(point).map(function(p, index) {
       return p + offset[index];
     });
   }
   
   getFlagTextJustification(options) {
-    var rightSide = _(['aboveright', 'belowright']).contains(options.flagDirection);
+    var angle = options.flagAngle%360;
+    var rightSide = angle <= 90 || angle > 270;
     return rightSide ? 'left' : 'right';
   }
   
