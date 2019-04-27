@@ -908,7 +908,6 @@ App = class {
     $('fieldset.placeLabels .container.fields').toggle(placeLabelOptions.show);
     $('select[data-property="placeLabels.style"]').val(placeLabelOptions.style);
     $('.map-settings .row.placeLabels-style-flag-fields').toggle(placeLabelOptions.style == 'flag');
-    //$('select[data-property="placeLabels.flagDirection"]').val(placeLabelOptions.flagDirection);
     $('select[data-property="placeLabels.flagAnchorShape"]').val(placeLabelOptions.flagAnchorShape);
     
     var measurementOptions = options.map.measurements;
@@ -924,7 +923,6 @@ App = class {
         _(folder.places).each(function(place, pIndex) {
           var $placeGroup = $('.sidebar .folder-settings fieldset.place[data-index="' + pIndex + '"]');
           $('.container.fields', $placeGroup).toggle(place.show);
-          //$('select[data-property="folders.' + fIndex + '.places.' + pIndex + '.placeLabels.flagDirection"]').val(place.displayOptions.placeLabels.flagDirection);
         });
       }
     }, this);
@@ -969,6 +967,8 @@ App = class {
         var savedOptions = null;
         if (folderIndex < savedFolderOptions.length) {
           var savedOptions = savedFolderOptions[folderIndex];
+          savedOptions = _(savedOptions).pick('show', 'placeLabels');
+          savedOptions.placeLabels = _(savedOptions.placeLabels).pick('style', 'fontSize', 'fontFamily', 'fontWeight', 'flagColor', 'flagAnchorShape', 'flagAnchorSize');
           options = $.extend(true, options, savedOptions);
         }
         
@@ -992,7 +992,10 @@ App = class {
             var savedPlaceOptions = _(savedOptions.places).where({id: placeId});
             
             if (placeIndex < savedPlaceOptions.length) {
-              newPlaceOptions = $.extend(true, newPlaceOptions, savedPlaceOptions[placeIndex]);
+              savedPlaceOptions = savedPlaceOptions[placeIndex];
+              savedPlaceOptions = _(savedPlaceOptions).pick('show', 'placeLabels');
+              savedPlaceOptions.placeLabels = _(savedPlaceOptions.placeLabels).pick('flagAngle', 'flagLength');
+              newPlaceOptions = $.extend(true, newPlaceOptions, savedPlaceOptions);
             }
           }
           
