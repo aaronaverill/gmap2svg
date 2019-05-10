@@ -283,8 +283,9 @@ Geo = {
    * Convert a floating point meters into a feet+inches label such as 11'9"
    */
   metersToFeetInches: function(meters) {
-    var feet = Math.floor(meters);
-    var inch = Math.round((meters - feet)*12);
+    var totalFeet = meters * 3.28084;
+    var feet = Math.floor(totalFeet);
+    var inch = Math.round((totalFeet - feet)*12);
     if (inch >= 12) {
       feet++;
       inch -= 12;
